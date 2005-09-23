@@ -17,8 +17,8 @@
 #                    REPLAY_ALBUM_GAIN tag) then the directory is skipped.
 #                    This option recalculates ReplayGain information
 #                    for all directories.
-#	--info           Output information (directories processed, etc.)
-#	--debug          Output debugging information
+#   --info           Output information (directories processed, etc.)
+#   --debug          Output debugging information
 #
 #  directory is the directory to scan for flac files. If omitted, the
 #  current directory is processed.
@@ -31,6 +31,8 @@
 # Robin Bowes (robin@robinbowes.com), 2004
 
 use strict;
+use FindBin;
+use lib "$FindBin::Bin/lib";
 use Audio::FLAC::Header;
 use Getopt::Long;
 
@@ -38,29 +40,31 @@ use Getopt::Long;
 
 # Assume metaflac is in the path.
 # Change this line if it is not.
-my $metaflaccmd = "metaflac";
+our $metaflaccmd = "metaflac";
 
 # Depending on your application, you may not require --preserve-modtime
-my @flacargs = qw ( --preserve-modtime --add-replay-gain );
+our @flacargs = qw ( --preserve-modtime --add-replay-gain );
 
 #-------------------- End User-changeable options ---------------------
 
-use vars qw (
-  $processall
-  $d_info
-  $d_debug
+#use vars qw (
+#  $::Options{processall}
+#  $d_info
+#  $d_debug
+#);
+
+our %Options;
+
+GetOptions( \%Options,
+            "processall!",
+            "info!",
+            "debug!",
 );
 
 # Set defaults
-$processall = 0;
-$d_info     = 0;
-$d_debug    = 0;
-
-GetOptions(
-    "processall!" => \$processall,
-    "info!"       => \$d_info,
-    "debug!"      => \$d_debug
-);
+#$::Options{processall} = 0;
+#$d_info     = 0;
+#$d_debug    = 0;
 
 showusage() unless ( scalar @ARGV <= 1 );
 
@@ -75,7 +79,7 @@ process_dirs(@ARGV);
 sub process_dirs {
     my @dirlist = @_;
     foreach my $dir (@dirlist) {
-        $::d_info && msg("Checking directory: $dir\n");
+        $::Options{info} && msg("Checking directory: $dir\n");
 
         # get all directory entries
         opendir( DIR, $dir ) or die "Couldn't open directory $dir\n";
@@ -96,7 +100,7 @@ sub process_dirs {
           grep { !/^\.\.?$/ }                 # not . or ..
           sort @direntries;
 
-        $::d_debug && msg("processall:   $processall\n");
+        $::Options{debug} && msg("processall:   $::Options{processall}\n");
 
         # If any files exist to be processed
         if (@target_files) {
@@ -104,14 +108,14 @@ sub process_dirs {
             # Don't bother checking the target files if
             # processall options specified
             my $processdir = 0;
-            if ( !$processall ) {
+            if ( !$::Options{processall} ) {
 
                 # Check all files for ReplayGain tags
                 # Process the whole directory is any files found without
                 # ReplayGain.
                 foreach my $flacfile (@target_files) {
 
-                    $::d_debug && msg("processing file:   $flacfile\n");
+                    $::Options{debug} && msg("processing file:   $flacfile\n");
 
                     my $flac = Audio::FLAC::Header->new($flacfile);
 
@@ -119,16 +123,16 @@ sub process_dirs {
                     my $RPGTag = $flac->tags("REPLAYGAIN_ALBUM_GAIN");
                     $processdir = 1 unless defined $RPGTag;
 
-                    $::d_debug && msg("RPGTag:   $RPGTag\n")
+                    $::Options{debug} && msg("RPGTag:   $RPGTag\n")
                       unless !defined $RPGTag;
                 }
             }
 
-            $::d_debug && msg("process_dir:   $processdir\n");
+            $::Options{debug} && msg("process_dir:   $processdir\n");
 
-            if ( $processall || $processdir ) {
+            if ( $::Options{processall} || $processdir ) {
 
-                $::d_info && msg("Processing dir: $dir\n");
+                $::Options{info} && msg("Processing dir: $dir\n");
 
                 # run metaflac on all target files in present directory
                 system( $metaflaccmd, @flacargs, @target_files );
