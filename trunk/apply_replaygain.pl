@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# apply_replaygain.pl
+# $Id$
 #
 # Applies replaygain tags to all .flac files found within the
 # specified directory tree.
