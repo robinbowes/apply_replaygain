@@ -49,10 +49,11 @@ our @flacargs = qw ( --preserve-modtime --add-replay-gain );
 #-------------------- End User-changeable options ---------------------
 
 our %Options;
+$Options{info} = 1;
 
 GetOptions( \%Options,
             "force|processall!",
-            "info!",
+            "info|quiet!",
             "debug!",
             "usage"     => sub { pod2usage() },
             "help"      => sub { pod2usage( -verbose => 1 ) },
@@ -73,6 +74,9 @@ process_dirs(@ARGV);
 sub process_dirs {
     my @dirlist = @_;
     foreach my $dir (@dirlist) {
+        # remove trailing slash from directory
+        $dir =~ s/\/$//;
+
         $::Options{info} && msg("Checking directory: $dir\n");
 
         # get all directory entries
