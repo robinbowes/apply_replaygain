@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 #
 # $Id$
 #
@@ -31,6 +31,7 @@
 # Robin Bowes (robin@robinbowes.com), 2004
 
 use strict;
+use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 use Audio::FLAC::Header;
