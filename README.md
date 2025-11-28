@@ -2,7 +2,7 @@
 
 apply\_replaygain.pl - write ReplayGain tags to flac files
 
-# SYNOPSIS
+## SYNOPSIS
 
 $0 \[options\] \[directory\]
 
@@ -19,7 +19,7 @@ $0 \[options\] \[directory\]
      --man                    full documentation
      --version                show program version
 
-# OPTIONS
+## OPTIONS
 
 - **force**, **processall**
 - **info**
@@ -29,7 +29,7 @@ $0 \[options\] \[directory\]
 - **man**
 - **version**
 
-# DESCRIPTION
+## DESCRIPTION
 
 **apply\_replaygain.pl**
 
@@ -41,3 +41,5 @@ i.e. Album gain tags are calculated per directory.
 
 If no directory is supplied on the command line, apply\_replaygain.pl use
 the current working directory.
+
+Ensure the Audio::FLAC::Header module is installed.
